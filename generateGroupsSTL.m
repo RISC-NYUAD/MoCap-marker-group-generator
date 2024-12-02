@@ -22,6 +22,7 @@ normals = stlData.faceNormal;
 
 
    % first load STL, get candidate points and clusters
+   % points generated are part of 3D grid, with min_dist/2 granularity
    [allPoints, clustered_directions, cluster_idx, clustered_points] = getPointsFromSTL(filename, num_points_per_group*2+1, min_dist, positive_visibility);
    
    clusters_centers = zeros(length(clustered_points),3);

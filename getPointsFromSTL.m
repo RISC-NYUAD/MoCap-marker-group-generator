@@ -11,7 +11,7 @@ faces = stlData.ConnectivityList;
 normals = stlData.faceNormal;
 
 % Parameters
-gridResolution = min_dist; % Minimum spacing between points (mm)
+gridResolution = min_dist/2; % Minimum spacing between points (mm)
 
 % Initialize storage for all generated points
 allPoints = [];
@@ -111,6 +111,13 @@ for i = 1:size(faces, 1)
     % Estimate the number of points based on the triangle area
     numPoints = ceil(area / (gridResolution^2));
 
+    % If normal is positive with respect to some visible direction, 
+    % assume normal is in correct direction, otherwise, switch
+    dir_1 = allDirections(find(visibilitiyMatrix(i,:)==1,1,'first'),:);
+    if dot(normal,dir_1) < 0 
+        normal = -normal;
+    end
+
     % Generate uniformly spaced points within the triangle using barycentric coordinates
     for n = 1:numPoints
         % Generate random barycentric coordinates
@@ -125,7 +132,7 @@ for i = 1:size(faces, 1)
         b3 = r2;
 
         % Convert to Cartesian coordinates
-        newPoint = b1 * v1 + b2 * v2 + b3 * v3;
+        newPoint = b1 * v1 + b2 * v2 + b3 * v3  + normal * min_dist*1.5 ;
 
         % Add the point to the collection (discretized)
         newPoint = round(newPoint / gridResolution) * gridResolution;
