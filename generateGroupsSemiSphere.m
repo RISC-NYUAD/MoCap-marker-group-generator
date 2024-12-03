@@ -71,8 +71,17 @@ end
 end
 
 function points = generateRandomPointsInSemiSphere(radius, num_points, min_dist)
-    % Generate random points in a semisphere with a minimum distance constraint
+% load image rendering library
+addpath("RederingLibrary") 
+% Generate random points in a semisphere with a minimum distance constraint
     points = [];
+    % Define directions and octants for visibility
+    directions = [
+    +1, +1, +1;
+    +1, -1, +1;
+    -1, +1, +1;
+    -1, -1, +1;
+    ];
     while size(points, 1) < num_points
         % Generate a random point in the spherical coordinates
         theta = rand() * pi; % Theta ranges from 0 to pi (semisphere)
@@ -90,7 +99,16 @@ function points = generateRandomPointsInSemiSphere(radius, num_points, min_dist)
 
             % Check if the new point satisfies the minimum distance constraint
             if isempty(points) || all(pdist2(new_point, points) > min_dist)
+            if size(points,1) == 1
+                new_cube_visible = checkCubeVisibility(zeros(1,3), points, new_point, min_dist, directions); 
+            else
+                new_cube_visible = 1;
+            end
+                if any(new_cube_visible)
                 points = [points; new_point]; %#ok<AGROW>
+                else
+                    [points; new_point]
+                end
             end
         end
     end

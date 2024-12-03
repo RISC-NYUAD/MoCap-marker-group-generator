@@ -1,4 +1,5 @@
 function [diff_pca, diff_ica] = computePCADiff(new_group, prev_points)
+    diff_ica = inf;
     % Equalize sizes by replicating points
     if size(new_group, 1) < size(prev_points, 1)
         diff_size = size(prev_points, 1) - size(new_group, 1);
@@ -25,21 +26,21 @@ function [diff_pca, diff_ica] = computePCADiff(new_group, prev_points)
     [coeff_pca_cos_new, ~] = pca(cos_matrix_new);
     [coeff_pca_cos_prev, ~] = pca(cos_matrix_prev);
 
-    % Apply ICA to both Euclidean and cosine distance matrices
-    num_components = min([size(dist_matrix_new, 2), size(dist_matrix_prev, 2)]);
-    rica_model_new = rica(dist_matrix_new, num_components);
-    rica_model_prev = rica(dist_matrix_prev, num_components);
-
-    rica_model_cos_new = rica(cos_matrix_new, num_components);
-    rica_model_cos_prev = rica(cos_matrix_prev, num_components);
+    % % Apply ICA to both Euclidean and cosine distance matrices
+    % num_components = min([size(dist_matrix_new, 2), size(dist_matrix_prev, 2)]);
+    % rica_model_new = rica(dist_matrix_new, num_components);
+    % rica_model_prev = rica(dist_matrix_prev, num_components);
+    % 
+    % rica_model_cos_new = rica(cos_matrix_new, num_components);
+    % rica_model_cos_prev = rica(cos_matrix_prev, num_components);
 
     % Compute the PCA difference (Euclidean and Cosine combined)
     diff_pca = norm(coeff_pca_new - coeff_pca_prev, 'fro') + ...
                norm(coeff_pca_cos_new - coeff_pca_cos_prev, 'fro');
 
     % Compute the ICA difference (Euclidean and Cosine combined)
-    diff_ica = norm(rica_model_new.TransformWeights - rica_model_prev.TransformWeights, 'fro') + ...
-               norm(rica_model_cos_new.TransformWeights - rica_model_cos_prev.TransformWeights, 'fro');
+    % diff_ica = norm(rica_model_new.TransformWeights - rica_model_prev.TransformWeights, 'fro') + ...
+    %            norm(rica_model_cos_new.TransformWeights - rica_model_cos_prev.TransformWeights, 'fro');
 end
 
 
@@ -51,6 +52,9 @@ end
 function cos_matrix = computeCosineMatrix(points)
     % Compute cosine of angles between points
     
+    % find cosine around mean of points
+    points = points - mean(points);
+
     % Compute norms of points (Euclidean norm)
     norms = vecnorm(points, 2, 2);
     
