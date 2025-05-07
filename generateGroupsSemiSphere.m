@@ -99,7 +99,7 @@ addpath("RederingLibrary")
 
             % Check if the new point satisfies the minimum distance constraint
             if isempty(points) || all(pdist2(new_point, points) > min_dist)
-            if size(points,1) == 1
+            if size(points,1) > 0
                 new_cube_visible = checkCubeVisibility(zeros(1,3), points, new_point, min_dist, directions); 
             else
                 new_cube_visible = 1;
@@ -107,7 +107,7 @@ addpath("RederingLibrary")
                 if any(new_cube_visible)
                 points = [points; new_point]; %#ok<AGROW>
                 else
-                    [points; new_point]
+                    [points; new_point];
                 end
             end
         end

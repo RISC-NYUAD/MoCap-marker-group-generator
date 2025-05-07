@@ -74,6 +74,14 @@ end
 function points = generateRandomPointsInTube(radius, height, num_points, min_dist)
     % Generate random points in a tube with a minimum distance constraint
     points = [];
+    addpath("RederingLibrary") 
+    % Define directions and octants for visibility
+    directions = [
+    +1, +1, +1;
+    +1, -1, +1;
+    -1, +1, +1;
+    -1, -1, +1;
+    ];
     while size(points, 1) < num_points
         % Generate random point in the tube
         angle = rand() * 2 * pi;
@@ -83,7 +91,16 @@ function points = generateRandomPointsInTube(radius, height, num_points, min_dis
         
         % Check if the new point satisfies the minimum distance constraint
         if isempty(points) || all(pdist2(new_point, points) > min_dist)
-            points = [points; new_point]; %#ok<AGROW>
+            if size(points,1) > 0
+                new_cube_visible = checkCubeVisibility(zeros(1,3), points, new_point, min_dist, directions); 
+            else
+                new_cube_visible = 1;
+            end
+                if any(new_cube_visible)
+                points = [points; new_point]; %#ok<AGROW>
+                else
+                    [points; new_point];
+                end                
         end
     end
 end

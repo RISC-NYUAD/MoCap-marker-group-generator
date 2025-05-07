@@ -11,7 +11,7 @@ function Cam = generateCameraForDirection(vertices, direction, scaleFactor)
     cameraPosition = objectCenter + scaleFactor * objectSize * direction;
 
     % Define the projection matrix (e.g., perspective)
-    PROJECTION_MATRIX = ProjectionMatrix(deg2rad(70), 1, 0.1);
+    PROJECTION_MATRIX = ProjectionMatrix(deg2rad(70), 1, 0.1,10000);
 
     % Define the camera rotation matrix
     viewDir = objectCenter - cameraPosition; % Camera looks at the center
@@ -34,6 +34,6 @@ function rotationMatrix = createRotationMatrix(direction)
     z = -direction / norm(direction); % Negative view direction (camera looks at origin)
     x = cross(up, z); % Orthogonal vector
     x = x / norm(x);
-    y = cross(z, x);
-    rotationMatrix = [x; y; z];
+    y = cross(z, x)/norm(cross(z, x));
+    rotationMatrix = [x(:), y(:), z(:)];
 end
